@@ -27,20 +27,20 @@ var portEgg = [4]byte{0x41,0x41,0x41,0x41}
 
 func errorPrint(location string, message string, err error) {
     if err != nil {
-        fmt.Fprintf(os.Stderr,"ERROR::%s::%s::%v::\n",location,message,err)
+        fmt.Fprintf(os.Stderr,"::ERROR::%s::%s::%v::\n",location,message,err)
         return
     }
-    fmt.Fprintf(os.Stderr,"ERROR::%s::%s::\n",location,message)
+    fmt.Fprintf(os.Stderr,"::ERROR::%s::%s::\n",location,message)
 }
 
 func infoPrint(location string, message string) {
-    fmt.Fprintf(os.Stdout,"INFO::%s::%s::\n",location,message)
+    fmt.Fprintf(os.Stdout,"::INFO::%s::%s::\n",location,message)
 }
 
 func debugPrint(items ...interface{}) {
     if (debugFlag){
         for _, item := range items {
-            fmt.Fprintf(os.Stderr,"DEBUG::%v\n",item)
+            fmt.Fprintf(os.Stderr,"::DEBUG::%v\n",item)
         }
     }
 }
@@ -57,7 +57,10 @@ func checkRequired() error{
     }
     if len(hostFlag) > 16 {
         return errors.New("Host flag too long");
-    }
+    }	
+	if portFlag > 65535 {
+        return errors.New("Port flag greater than 65535");
+	}
     return nil
 }
 
@@ -115,22 +118,36 @@ func generate(arch string){
     name := fmt.Sprintf("shell%s.%s.%d.bin",arch,hostFlag,portFlag)
     infoPrint("generate",fmt.Sprintf("generated %s",name))
     err = os.WriteFile(name,replacedPort,0644)
-    if err == nil {
+    if err != nil {
         log.Fatal(err)
     }
 }
 
+
+func printWhale(){
+	fmt.Printf(":::::::::::::::\n")
+    fmt.Printf(`
+shellg
+
+ __v_
+(____\/{
+        `)
+	fmt.Printf("\n")
+	fmt.Printf("----------------\n")
+}
+
 func main(){
-    fmt.Printf("shellg")
-    flag.StringVar(&archFlag,"arch","","Shell Architecture (x64,x32,x64_arm,x64_static,x32_static)")
+	printWhale()
+    flag.StringVar(&archFlag,"arch","","x64, x32, x64_arm, x64_static, x32_static")
     flag.StringVar(&archFlag,"a","","")
-    flag.StringVar(&hostFlag,"host","","Target IP 16 Characters Max")
+    flag.StringVar(&hostFlag,"host","","ip")
     flag.StringVar(&hostFlag,"h","","")
-    flag.IntVar(&portFlag,"port",0,"Target Port")
+    flag.IntVar(&portFlag,"port",0,"port")
     flag.IntVar(&portFlag,"p",0,"")
     flag.Parse()
-    if checkRequired() != nil {
-        flag.PrintDefaults()
+    err := checkRequired()  
+    if err != nil {
+        errorPrint("main","argument error",err)
         return
     }
     switch (archFlag){
@@ -145,7 +162,7 @@ func main(){
     case "x32_static":
        generate("32_static")
     default:
-        errorPrint("main","invalid arch supplied (x32,x64)",nil)
+		flag.PrintDefaults()
         return
     }
 }
