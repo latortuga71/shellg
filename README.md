@@ -21,3 +21,5 @@ Usage of ./shellg:
   -port int
         port
 ```
+
+`go install github.com/latortuga71/shellg@latest`
