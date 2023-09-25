@@ -104,7 +104,7 @@ func convertArgsToBytes(host string, port int) ([]byte,[]byte){
 
 
 func generate(arch string){
-    shell64Bytes, err := binDir.ReadFile(fmt.Sprintf("Shells/bin/shell%s",arch))
+    shell64Bytes, err := binDir.ReadFile(fmt.Sprintf("shells/bin/shell%s",arch))
     if err != nil {
         errorPrint("main","failed to read embedded file",err)
         os.Exit(-1)
