@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-//go:embed Shells/bin/*
+//go:embed shells/bin/*
 var binDir embed.FS
 
 
